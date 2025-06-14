@@ -27,4 +27,4 @@ jobs:
       env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
-      python import_categ.py
+          python import_categ.py
