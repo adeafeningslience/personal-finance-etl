@@ -1,39 +1,26 @@
-# this script loads the initial CATEGORIES table from the .csv file
-
 import pandas as pd
 import psycopg2
+import os
 
-# Load your CSV or Excel
 df = pd.read_csv('categ.csv')
 
-
-
-# Connect to your database
 conn = psycopg2.connect(
-    dbname="postgres",
-    user="postgres",
-    password="K%$h3lle1978",
-    host="db.khxszacsifnwklitpkvz.supabase.co",)
+    dbname=os.environ.get("DB_NAME"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASSWORD"),
+    host=os.environ.get("DB_HOST"),
+    port=os.environ.get("DB_PORT", "5432")
+)
+
 cursor = conn.cursor()
 
-# Insert into transactions table
 for _, row in df.iterrows():
     cursor.execute("""
     INSERT INTO ref.categories (id, name)
     VALUES (%s, %s)
-    ON CONFLICT (id) DO UPDATE
-    SET name = EXCLUDED.name
+    ON CONFLICT (id) DO NOTHING
     """, (row["id"], row["name"]))
 
 conn.commit()
 cursor.close()
 conn.close()
-
-
-
-
-
-
-
-
-
