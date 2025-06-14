@@ -4,14 +4,9 @@ import os
 
 df = pd.read_csv('categ.csv')
 
-conn = psycopg2.connect(
-    dbname=os.environ.get("DB_NAME"),
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASSWORD"),
-    host=os.environ.get("DB_HOST"),
-    port=os.environ.get("DB_PORT", "5432")
-)
 
+# Connect using DATABASE_URL environment variable
+conn = psycopg2.connect(os.environ["DATABASE_URL"])
 cursor = conn.cursor()
 
 for _, row in df.iterrows():
@@ -24,3 +19,4 @@ for _, row in df.iterrows():
 conn.commit()
 cursor.close()
 conn.close()
+
