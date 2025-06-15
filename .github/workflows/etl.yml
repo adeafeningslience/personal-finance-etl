@@ -26,11 +26,13 @@ jobs:
     - name: Test DNS resolution
       run: nslookup db.khxszacsifnwklitpkvz.supabase.co
 
+
+
     - name: Update apt cache
       run: sudo apt-get update
 
     - name: Install netcat
-      run: sudo apt-get install -y netcat
+      run: sudo apt-get install -y netcat-openbsd
 
     - name: Test port connectivity
       run: nc -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
