@@ -5,6 +5,16 @@ on:
     - cron: '0 4 * * *'  # Every night at 3 AM UTC
   workflow_dispatch:      # Allow manual trigger too
 
+    - name: Test DNS resolution
+      run: nslookup db.khxszacsifnwklitpkvz.supabase.co
+
+    - name: Test port connectivity
+      run: |
+        apt-get update && apt-get install -y netcat
+        nc -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
+
+
+
 jobs:
   etl_job:
     runs-on: ubuntu-latest
