@@ -24,18 +24,24 @@ jobs:
         pip install pandas psycopg2-binary
 
     - name: Test DNS resolution
-      run: nslookup db.khxszacsifnwklitpkvz.supabase.co
+      run: nslookup db.khxszacsifnwklitpkvz.supabase.co || echo "DNS lookup failed"
+
+    - name: Test IPv4 DNS resolution only
+      run: nslookup -4 db.khxszacsifnwklitpkvz.supabase.co || echo "IPv4 DNS lookup failed"
+
+    - name: Ping DB host (IPv4)
+      run: ping -c 4 db.khxszacsifnwklitpkvz.supabase.co || echo "Ping failed"
+
+    - name: Test port connectivity with netcat (IPv4)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y netcat-openbsd
+        nc -4 -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
+
+    - name: Curl DB host port test
+      run: curl -v telnet://db.khxszacsifnwklitpkvz.supabase.co:5432 || echo "Curl failed"
 
 
-
-    - name: Update apt cache
-      run: sudo apt-get update
-
-    - name: Install netcat
-      run: sudo apt-get install -y netcat-openbsd
-
-    - name: Test port connectivity
-      run: nc -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
 
     - name: Run ETL Script
       env:
