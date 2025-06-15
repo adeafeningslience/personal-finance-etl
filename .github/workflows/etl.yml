@@ -5,8 +5,6 @@ on:
     - cron: '0 4 * * *'  # Every night at 3 AM UTC
   workflow_dispatch:      # Allow manual trigger too
 
-
-
 jobs:
   etl_job:
     runs-on: ubuntu-latest
@@ -28,14 +26,16 @@ jobs:
     - name: Test DNS resolution
       run: nslookup db.khxszacsifnwklitpkvz.supabase.co
 
-    - name: Test port connectivity
-      run: |
-        sudo apt-get update && apt-get install -y netcat
-        nc -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
+    - name: Update apt cache
+      run: sudo apt-get update
 
+    - name: Install netcat
+      run: sudo apt-get install -y netcat
+
+    - name: Test port connectivity
+      run: nc -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
 
     - name: Run ETL Script
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      run: |
-        python import_categ.py
+      run: python import_categ.py
