@@ -1,16 +1,14 @@
-name: Run Nightly ETL
+name: Minimal ETL Test
 
 on:
-  schedule:
-    - cron: '0 4 * * *'  # Every night at 3 AM UTC
-  workflow_dispatch:      # Allow manual trigger too
+  workflow_dispatch:  # Trigger manually
 
 jobs:
   etl_job:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repo
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -18,32 +16,13 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pandas psycopg2-binary
+        pip install --upgrade pip
+        pip install psycopg2-binary
 
-    - name: Test DNS resolution
-      run: nslookup db.khxszacsifnwklitpkvz.supabase.co || echo "DNS lookup failed"
-
-    - name: Test IPv4 DNS resolution only
-      run: nslookup -4 db.khxszacsifnwklitpkvz.supabase.co || echo "IPv4 DNS lookup failed"
-
-    - name: Ping DB host (IPv4)
-      run: ping -c 4 db.khxszacsifnwklitpkvz.supabase.co || echo "Ping failed"
-
-    - name: Test port connectivity with netcat (IPv4)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y netcat-openbsd
-        nc -4 -zv db.khxszacsifnwklitpkvz.supabase.co 5432 || echo "Port test failed"
-
-    - name: Curl DB host port test
-      run: curl -v telnet://db.khxszacsifnwklitpkvz.supabase.co:5432 || echo "Curl failed"
-
-
-
-    - name: Run ETL Script
+    - name: Run connection test
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      run: python import_categ.py
+      run: |
+        python test_connection.py
