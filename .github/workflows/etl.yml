@@ -1,14 +1,16 @@
-name: Minimal ETL Test
+name: Run Nightly ETL
 
 on:
-  workflow_dispatch:  # Trigger manually
+  schedule:
+    - cron: '0 4 * * *'  # Runs every night at 4 AM UTC
+  workflow_dispatch:      # Allow manual trigger
 
 jobs:
   etl_job:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -16,12 +18,12 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install Python dependencies
+    - name: Install dependencies
       run: |
-        pip install --upgrade pip
-        pip install psycopg2-binary
+        python -m pip install --upgrade pip
+        pip install sqlalchemy pg8000 pandas
 
-    - name: Run connection test
+    - name: Run test connection
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |

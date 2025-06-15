@@ -1,6 +1,12 @@
-import psycopg2
 import os
+import sqlalchemy
 
-conn = psycopg2.connect(os.environ["DATABASE_URL"])
-print("✅ Connected successfully!")
-conn.close()
+try:
+    engine = sqlalchemy.create_engine(os.environ["DATABASE_URL"], connect_args={"sslmode": "require"})
+    with engine.connect() as conn:
+        print("✅ Connected successfully!")
+except Exception as e:
+    print("❌ Connection failed:")
+    print(e)
+    exit(1)
+
